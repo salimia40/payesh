@@ -9,3 +9,56 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id          Int      @unique @default(autoincrement())
+  firstName   String
+  lastName    String
+  nationalId  String
+  birthdate   DateTime
+  fatherName  String
+  phoneNumber String
+  address     String
+  Region      Region   @relation(fields: [regionId], references: [id])
+  role        UserRole
+  Verified    Boolean  @default(false)
+  enabled     Boolean  @default(true)
+  regionId    Int
+  Token       Token[]
+  createdAt   DateTime @default(now())
+}
+
+enum UserRole {
+  admin
+  agent
+}
+
+model Region {
+  id     Int    @unique @default(autoincrement())
+  name   String
+  city   City   @relation(fields: [cityId], references: [id])
+  cityId Int
+  User   User[]
+}
+
+model City {
+  id     Int      @unique @default(autoincrement())
+  name   String
+  Region Region[]
+}
+
+model Token {
+  id        Int       @unique @default(autoincrement())
+  user      User      @relation(fields: [userId], references: [id])
+  userId    Int
+  expiresAt DateTime
+  isValid   Boolean   @default(true)
+  value     String
+  type      TokenType
+  createdAt DateTime  @default(now())
+}
+
+enum TokenType {
+  validation
+  authentication
+}

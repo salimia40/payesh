@@ -12,7 +12,7 @@ export default class App {
     this.app.use(express.json());
   }
 
-  public listen(port: any) {
+  public listen(port: number) {
     this.app.listen(port, () => {
       console.log(`App listening on the port ${port}`);
     });
