@@ -11,21 +11,22 @@ datasource db {
 }
 
 model User {
-  id          Int      @unique @default(autoincrement())
+  id          Int           @unique @default(autoincrement())
   firstName   String
   lastName    String
   nationalId  String
   birthdate   DateTime
   fatherName  String
-  phoneNumber String
+  phoneNumber String        @unique
   address     String
-  Region      Region   @relation(fields: [regionId], references: [id])
   role        UserRole
-  Verified    Boolean  @default(false)
-  enabled     Boolean  @default(true)
+  Verified    Boolean       @default(false)
+  enabled     Boolean       @default(false)
   regionId    Int
-  Token       Token[]
-  createdAt   DateTime @default(now())
+  createdAt   DateTime      @default(now())
+  region      Region        @relation(fields: [regionId], references: [id])
+  tokens      Token[]
+  permissions Permissions[]
 }
 
 enum UserRole {
@@ -53,7 +54,7 @@ model Token {
   userId    Int
   expiresAt DateTime
   isValid   Boolean   @default(true)
-  value     String
+  payload   String?
   type      TokenType
   createdAt DateTime  @default(now())
 }
@@ -61,4 +62,16 @@ model Token {
 enum TokenType {
   validation
   authentication
+  login
+}
+
+model Permissions {
+  id                    Int     @unique @default(autoincrement())
+  user                  User    @relation(fields: [userId], references: [id])
+  userId                Int
+  userVerification      Boolean @default(false)
+  roleManagement        Boolean @default(false)
+  realStateView         Boolean @default(false)
+  realStateVerification Boolean @default(false)
+  suspendUsers          Boolean @default(false)
 }

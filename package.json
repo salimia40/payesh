@@ -32,6 +32,9 @@
   },
   "dependencies": {
     "@prisma/client": "^3.9.2",
-    "express": "^4.17.2"
+    "date-fns": "^2.28.0",
+    "express": "^4.17.2",
+    "express-boom": "^3.0.0",
+    "jsonwebtoken": "^8.5.1"
   }
 }
