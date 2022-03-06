@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon --watch \"src/**\" src/index.ts",
-    "start": "node dist",
+    "start": "node dist/src",
     "clean": "rm -rf dist",
     "build": "npm -s run clean && npm -s run generate && tsc",
     "generate": "npm -s run prisma:generate",
@@ -19,6 +19,7 @@
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.18",
+    "@types/request": "^2.48.8",
     "@types/supertest": "^2.0.11",
     "jest": "^27.5.1",
     "jest-mock-extended": "^2.0.4",
@@ -35,6 +36,7 @@
     "date-fns": "^2.28.0",
     "express": "^4.17.2",
     "express-boom": "^3.0.0",
-    "jsonwebtoken": "^8.5.1"
+    "jsonwebtoken": "^8.5.1",
+    "request": "^2.88.2"
   }
 }

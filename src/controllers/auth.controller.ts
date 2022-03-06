@@ -36,9 +36,10 @@ export default class AuthController {
         birthdate,
         regionId
       );
+
       res.send(user);
     } catch (error) {
-      res.boom.badRequest(error.message);
+      if (error instanceof Error) res.boom.badRequest(error.message);
     }
   };
 
@@ -48,7 +49,7 @@ export default class AuthController {
     try {
       await UserService.verify(phoneNumber, code);
     } catch (error) {
-      res.boom.badRequest(error.message);
+      if (error instanceof Error) res.boom.badRequest(error.message);
     }
   };
 
@@ -77,7 +78,7 @@ export default class AuthController {
       },
     });
 
-    SMSService.sendVerificationCode(generatedToken);
+    SMSService.sendVerificationCode(phoneNumber, generatedToken);
 
     res.sendStatus(200);
   };

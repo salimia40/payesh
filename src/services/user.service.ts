@@ -3,6 +3,13 @@ import prisma from "../db";
 import { add, isPast } from "date-fns";
 import SMSService from "./sms.service";
 
+type Permission =
+  | "userVerification"
+  | "roleManagement"
+  | "realStateView"
+  | "realStateVerification"
+  | "suspendUsers";
+
 export default class UserService {
   static async verify(phoneNumber: any, code: any) {
     let token = await prisma.token.findFirst({
@@ -89,10 +96,59 @@ export default class UserService {
       },
     });
 
-    SMSService.sendVerificationCode(generatedToken);
+    SMSService.sendVerificationCode(user.phoneNumber, generatedToken);
 
     return user;
   }
+
+  static grantPermission = async (userId: number, permission: Permission) => {
+    await this.setPermission(userId, permission, true);
+  };
+
+  static denyPermission = async (userId: number, permission: Permission) => {
+    await this.setPermission(userId, permission, false);
+  };
+
+  private static setPermission = async (
+    userId: number,
+    permission: Permission,
+    enabled: boolean
+  ) => {
+    let permissions = await prisma.permissions.findFirst({ where: { userId } });
+    switch (permission) {
+      case "userVerification":
+        prisma.permissions.update({
+          where: { id: permissions?.id },
+          data: { userVerification: enabled },
+        });
+        break;
+      case "roleManagement":
+        prisma.permissions.update({
+          where: { id: permissions?.id },
+          data: { roleManagement: enabled },
+        });
+        break;
+      case "realStateView":
+        prisma.permissions.update({
+          where: { id: permissions?.id },
+          data: { realStateView: enabled },
+        });
+        break;
+      case "realStateVerification":
+        prisma.permissions.update({
+          where: { id: permissions?.id },
+          data: { realStateVerification: enabled },
+        });
+        break;
+      case "suspendUsers":
+        prisma.permissions.update({
+          where: { id: permissions?.id },
+          data: { suspendUsers: enabled },
+        });
+        break;
+    }
+  };
+
   static async userExists(phoneNumber: string) {
     let user = await prisma.user.findUnique({ where: { phoneNumber } });
     return user !== null;

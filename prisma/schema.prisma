@@ -21,6 +21,7 @@ model User {
   address     String
   role        UserRole
   Verified    Boolean       @default(false)
+  confirmed   Boolean       @default(false)
   enabled     Boolean       @default(false)
   regionId    Int
   createdAt   DateTime      @default(now())
