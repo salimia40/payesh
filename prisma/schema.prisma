@@ -85,8 +85,8 @@ model Property {
 
 model Picture {
   id         Int      @unique @default(autoincrement())
-  url        String
-  inMain     Boolean  @default(false)
+  isMain     Boolean  @default(false)
+  data       Bytes?
   Property   Property @relation(name: "picture", fields: [propertyId], references: [id])
   propertyId Int
 }

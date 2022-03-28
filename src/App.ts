@@ -2,6 +2,7 @@ import express from "express";
 import boom from "express-boom";
 import AuthController from "./controllers/auth.controller";
 import CityController from "./controllers/city.controller";
+import { PictureController } from "./controllers/picture.controller";
 import RegionController from "./controllers/region.controller";
 import UserController from "./controllers/user.controller";
 
@@ -24,6 +25,7 @@ export default class App {
     this.app.use(UserController.route, UserController.setup());
     this.app.use(CityController.route, CityController.setup());
     this.app.use(RegionController.route, RegionController.setup());
+    this.app.use(PictureController.route, PictureController.setup());
   }
 
   public listen(port: number) {
