@@ -95,7 +95,6 @@ model Contact {
   id       Int        @unique @default(autoincrement())
   name     String
   phone    String
-  email    String
   User     User       @relation(fields: [userId], references: [id])
   userId   Int
   Property Property[]

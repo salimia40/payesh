@@ -52,10 +52,10 @@ export class PictureController {
   };
 
   static getPicture: RequestHandler = async (req, res) => {
-    let { pictureId } = req.body;
+    let { pictureId } = req.params;
     let picture = await prisma.picture.findFirst({
       where: {
-        id: pictureId,
+        id: parseInt(pictureId),
       },
       select: {
         data: true,
@@ -71,7 +71,7 @@ export class PictureController {
     router.post("/new", this.upload, this.createPicture);
     router.post("/byProperty", this.getPicturesByProperty);
     router.post("/single", this.getPictureById);
-    router.post("/get", this.getPicture);
+    router.get("/get/:pictureId", this.getPicture);
 
     return router;
   };
