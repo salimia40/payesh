@@ -11,23 +11,26 @@ datasource db {
 }
 
 model User {
-  id          Int           @unique @default(autoincrement())
+  id          Int          @unique @default(autoincrement())
   firstName   String
   lastName    String
   nationalId  String
   birthdate   DateTime
   fatherName  String
-  phoneNumber String        @unique
+  phoneNumber String       @unique
   address     String
   role        UserRole
-  Verified    Boolean       @default(false)
-  confirmed   Boolean       @default(false)
-  enabled     Boolean       @default(false)
+  Verified    Boolean      @default(false)
+  confirmed   Boolean      @default(false)
+  enabled     Boolean      @default(false)
   regionId    Int
-  createdAt   DateTime      @default(now())
-  region      Region        @relation(fields: [regionId], references: [id])
+  createdAt   DateTime     @default(now())
+  region      Region       @relation(fields: [regionId], references: [id])
   tokens      Token[]
-  permissions Permissions[]
+  permissions Permissions?
+  Properties  Property[]
+  Contact     Contact[]
+  View        View[]
 }
 
 enum UserRole {
@@ -36,17 +39,95 @@ enum UserRole {
 }
 
 model Region {
-  id     Int    @unique @default(autoincrement())
-  name   String
-  city   City   @relation(fields: [cityId], references: [id])
-  cityId Int
-  User   User[]
+  id       Int        @unique @default(autoincrement())
+  name     String
+  city     City       @relation(fields: [cityId], references: [id])
+  cityId   Int
+  User     User[]
+  Property Property[]
 }
 
 model City {
   id     Int      @unique @default(autoincrement())
   name   String
   Region Region[]
+}
+
+model Property {
+  id              Int            @unique @default(autoincrement())
+  name            String
+  description     String
+  price           Int
+  minPrice        Int
+  maxPrice        Int
+  type            PropertyType
+  numberOfRooms   Int
+  numberOfToilets Int
+  numberOfBeds    Int
+  numberOfBaths   Int
+  area            Int
+  address         String
+  regionId        Int
+  contact         Contact        @relation(fields: [contactId], references: [id])
+  confirmed       Boolean        @default(false)
+  views           Int            @default(0)
+  status          PropertyStatus
+  tradeType       TradeType
+  createdAt       DateTime       @default(now())
+  region          Region         @relation(fields: [regionId], references: [id])
+  User            User           @relation(fields: [userId], references: [id])
+  userId          Int
+  contactId       Int
+  Views           View[]
+  Picture         Picture[]      @relation("picture")
+  pictureId       Int?
+}
+
+model Picture {
+  id         Int      @unique @default(autoincrement())
+  url        String
+  inMain     Boolean  @default(false)
+  Property   Property @relation(name: "picture", fields: [propertyId], references: [id])
+  propertyId Int
+}
+
+model Contact {
+  id       Int        @unique @default(autoincrement())
+  name     String
+  phone    String
+  email    String
+  User     User       @relation(fields: [userId], references: [id])
+  userId   Int
+  Property Property[]
+}
+
+model View {
+  id         Int      @unique @default(autoincrement())
+  User       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  Property   Property @relation(fields: [propertyId], references: [id])
+  propertyId Int
+  createdAt  DateTime @default(now())
+}
+
+enum PropertyType {
+  apartment
+  house
+  land
+  workshop
+  shop
+  farmland
+}
+
+enum PropertyStatus {
+  available
+  sold
+  rented
+}
+
+enum TradeType {
+  sale
+  rent
 }
 
 model Token {
@@ -69,7 +150,7 @@ enum TokenType {
 model Permissions {
   id                    Int     @unique @default(autoincrement())
   user                  User    @relation(fields: [userId], references: [id])
-  userId                Int
+  userId                Int     @unique
   userVerification      Boolean @default(false)
   roleManagement        Boolean @default(false)
   realStateView         Boolean @default(false)

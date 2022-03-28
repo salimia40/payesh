@@ -1,4 +1,3 @@
-import { resolveSoa } from "dns";
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
 
