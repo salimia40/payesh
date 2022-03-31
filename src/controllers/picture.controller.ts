@@ -2,6 +2,7 @@ import { RequestHandler, Router } from "express";
 import prisma from "../db";
 import multer, { memoryStorage } from "multer";
 import { pictureInputValidator, propertyIdValidator } from "./validators";
+import authMiddleware from "../middlewares/auth.middleware";
 
 export class PictureController {
   static upload = multer({ dest: "/uploads", storage: memoryStorage() }).single(
@@ -47,6 +48,11 @@ export class PictureController {
         isMain,
         data: Buffer.from(req.file?.buffer ?? ""),
       },
+      select: {
+        id: true,
+        isMain: true,
+        propertyId: true,
+      },
     });
 
     res.send(picture);
@@ -71,11 +77,17 @@ export class PictureController {
     const router = Router();
     router.post(
       "/new",
+      authMiddleware,
       this.upload,
       // pictureInputValidator,
       this.createPicture
     );
-    router.post("/byProperty", propertyIdValidator, this.getPicturesByProperty);
+    router.post(
+      "/byProperty",
+      authMiddleware,
+      propertyIdValidator,
+      this.getPicturesByProperty
+    );
     router.post("/single", propertyIdValidator, this.getPictureById);
     router.get("/get/:pictureId", this.getPicture);
 

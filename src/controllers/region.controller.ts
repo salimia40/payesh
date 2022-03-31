@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import authMiddleware from "../middlewares/auth.middleware";
 import {
   cityIdValidator,
   regionIdValidator,
@@ -46,7 +47,12 @@ export default class RegionController {
 
   static setup() {
     let router = Router();
-    router.post("/new", regionInputValidator, this.createRegion);
+    router.post(
+      "/new",
+      authMiddleware,
+      regionInputValidator,
+      this.createRegion
+    );
     router.post("/all", this.getRegions);
     router.post("/single", regionIdValidator, this.getRegionById);
     router.post("/city", cityIdValidator, this.getRegionsByCity);

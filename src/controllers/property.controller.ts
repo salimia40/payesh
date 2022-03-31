@@ -1,5 +1,7 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import authMiddleware from "../middlewares/auth.middleware";
+import permissionMiddleware from "../middlewares/permission.middleware";
 import {
   propertyIdValidator,
   propertyInputValidator,
@@ -190,56 +192,82 @@ export class PropertyController {
     const router = Router();
     router.post(
       "/create",
+      authMiddleware,
       propertyInputValidator,
       PropertyController.createProperty
     );
     router.post(
       "/view",
+
+      authMiddleware,
       propertyViewValidator,
       PropertyController.viewProperty
     );
     router.post(
       "/confirm",
+      authMiddleware,
+      permissionMiddleware("realStateVerification", true),
       propertyIdValidator,
       PropertyController.confirmProperty
     );
     router.post(
       "/getById",
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       propertyIdValidator,
       PropertyController.getPropertyById
     );
     router.post(
       "/getMostViewedProperties",
+
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       PropertyController.getMostViewedProperties
     );
     router.post(
       "/getMostViewedPropertiesByType",
+
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       propertyTypeValidator,
       PropertyController.getMostViewedPropertiesByType
     );
     router.post(
       "/getMostViewedPropertiesByRegion",
+
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       regionIdValidator,
       PropertyController.getMostViewedPropertiesByRegion
     );
     router.post(
       "/getMostViewedPropertiesByTypeAndRegion",
+
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       propertyTypeRegionValidator,
       PropertyController.getMostViewedPropertiesByTypeAndRegion
     );
     router.post(
       "/getPropertiesByUserId",
+
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       userIdValidator,
       PropertyController.getPropertiesByUserId
     );
     router.post(
       "/getPropertiesByRegionId",
+
+      authMiddleware,
+      permissionMiddleware("realStateView", false),
       regionIdValidator,
       PropertyController.getPropertiesByRegionId
     );
 
     router.post(
       "/setPropertyStatus",
+      authMiddleware,
       propertyStatusValidator,
       PropertyController.setPropertyStatus
     );

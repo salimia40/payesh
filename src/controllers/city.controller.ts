@@ -1,5 +1,6 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import authMiddleware from "../middlewares/auth.middleware";
 import { cityIdValidator, cityInputValidator } from "./validators";
 
 export default class CityController {
@@ -31,7 +32,7 @@ export default class CityController {
 
   static setup() {
     let router = Router();
-    router.post("/new", cityInputValidator, this.createCity);
+    router.post("/new", authMiddleware, cityInputValidator, this.createCity);
     router.post("/all", this.getCities);
     router.post("/single", cityIdValidator, this.getCityById);
     return router;

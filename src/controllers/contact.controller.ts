@@ -1,6 +1,9 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import authMiddleware from "../middlewares/auth.middleware";
+import permissionMiddleware from "../middlewares/permission.middleware";
 import {
+  cityIdValidator,
   contactIdValidator,
   contactInputValidator,
   userIdValidator,
@@ -39,15 +42,49 @@ export class ContactController {
     res.send(contacts);
   };
 
+  // get contacts by cityId
+
+  static getContactsByCityId: RequestHandler = async (req, res) => {
+    let { cityId } = req.body;
+    let contacts = await prisma.property.findFirst({
+      where: {
+        id: +cityId,
+      },
+      include: {
+        contact: true,
+      },
+    }).contact;
+    res.send(contacts);
+  };
+
   static route = "/contact";
   static setup = () => {
     const router = Router();
-    router.post("/new", contactInputValidator, ContactController.createContact);
-    router.post("/get", contactIdValidator, ContactController.getContactById);
+    router.post(
+      "/new",
+      authMiddleware,
+      contactInputValidator,
+      ContactController.createContact
+    );
+    router.post(
+      "/get",
+      authMiddleware,
+      contactIdValidator,
+      ContactController.getContactById
+    );
     router.post(
       "/user",
+      authMiddleware,
       userIdValidator,
       ContactController.getContactsByUserId
+    );
+
+    router.post(
+      "/city",
+      authMiddleware,
+      permissionMiddleware("realStateView", true),
+      cityIdValidator,
+      ContactController.getContactsByCityId
     );
 
     return router;
