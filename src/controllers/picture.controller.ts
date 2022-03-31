@@ -43,7 +43,7 @@ export class PictureController {
 
     let picture = await prisma.picture.create({
       data: {
-        propertyId,
+        propertyId: parseInt(propertyId),
         isMain,
         data: Buffer.from(req.file?.buffer ?? ""),
       },
@@ -62,14 +62,19 @@ export class PictureController {
         data: true,
       },
     });
-    res.send(picture);
+    res.send(picture?.data);
   };
 
   static route = "/picture";
 
   static setup = () => {
     const router = Router();
-    router.post("/new", this.upload, pictureInputValidator, this.createPicture);
+    router.post(
+      "/new",
+      this.upload,
+      // pictureInputValidator,
+      this.createPicture
+    );
     router.post("/byProperty", propertyIdValidator, this.getPicturesByProperty);
     router.post("/single", propertyIdValidator, this.getPictureById);
     router.get("/get/:pictureId", this.getPicture);

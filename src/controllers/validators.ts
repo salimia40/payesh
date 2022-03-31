@@ -71,7 +71,7 @@ export const pictureIdValidator = validateRequest({
 });
 export const pictureInputValidator = validateRequest({
   body: z.object({
-    pictureId: z.number(),
+    propertyId: z.number(),
     isMain: z.boolean(),
   }),
 });

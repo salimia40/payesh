@@ -2,6 +2,7 @@ import { RequestHandler, Router } from "express";
 import prisma from "../db";
 import {
   propertyIdValidator,
+  propertyInputValidator,
   propertyStatusValidator,
   propertyTypeRegionValidator,
   propertyTypeValidator,
@@ -187,7 +188,11 @@ export class PropertyController {
   static route = "/property";
   static setup = () => {
     const router = Router();
-    router.post("/create", PropertyController.createProperty);
+    router.post(
+      "/create",
+      propertyInputValidator,
+      PropertyController.createProperty
+    );
     router.post(
       "/view",
       propertyViewValidator,
