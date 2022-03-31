@@ -20,6 +20,7 @@
     "@types/express": "^4.17.13",
     "@types/express-boom": "^3.0.1",
     "@types/jest": "^27.4.0",
+    "@types/jsonwebtoken": "^8.5.8",
     "@types/multer": "^1.4.7",
     "@types/node": "^17.0.18",
     "@types/request": "^2.48.8",
@@ -41,6 +42,8 @@
     "express-boom": "^3.0.0",
     "jsonwebtoken": "^8.5.1",
     "multer": "^1.4.4",
-    "request": "^2.88.2"
+    "request": "^2.88.2",
+    "zod": "^3.14.3",
+    "zod-express-middleware": "^1.4.0"
   }
 }

@@ -1,5 +1,10 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import {
+  contactIdValidator,
+  contactInputValidator,
+  userIdValidator,
+} from "./validators";
 
 export class ContactController {
   static createContact: RequestHandler = async (req, res) => {
@@ -7,7 +12,7 @@ export class ContactController {
     let contact = await prisma.contact.create({
       data: {
         name,
-        userId,
+        userId: +userId,
         phone,
       },
     });
@@ -18,7 +23,7 @@ export class ContactController {
     let { contactId } = req.body;
     let contact = await prisma.contact.findFirst({
       where: {
-        id: contactId,
+        id: +contactId,
       },
     });
     res.send(contact);
@@ -28,7 +33,7 @@ export class ContactController {
     let { userId } = req.body;
     let contacts = await prisma.contact.findMany({
       where: {
-        userId,
+        userId: +userId,
       },
     });
     res.send(contacts);
@@ -37,9 +42,13 @@ export class ContactController {
   static route = "/contact";
   static setup = () => {
     const router = Router();
-    router.post("/", ContactController.createContact);
-    router.post("/get", ContactController.getContactById);
-    router.post("/byUserId", ContactController.getContactsByUserId);
+    router.post("/new", contactInputValidator, ContactController.createContact);
+    router.post("/get", contactIdValidator, ContactController.getContactById);
+    router.post(
+      "/user",
+      userIdValidator,
+      ContactController.getContactsByUserId
+    );
 
     return router;
   };

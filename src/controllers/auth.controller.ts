@@ -5,11 +5,16 @@ import prisma from "../db";
 import SMSService from "../services/sms.service";
 import TokenService from "../services/token.service";
 import UserService from "../services/user.service";
+import {
+  phoneNumberValidator,
+  registerValidator,
+  verifyValidator,
+} from "./validators";
 
 export default class AuthController {
   private static userExistsHandler: RequestHandler = async (req, res) => {
     let phoneNumber = req.body.phoneNumber;
-    let exists = UserService.userExists(phoneNumber);
+    let exists = await UserService.userExists(phoneNumber);
     res.send({ exists });
   };
 
@@ -25,6 +30,8 @@ export default class AuthController {
       regionId,
     } = req.body;
 
+    console.log(birthdate);
+
     try {
       let user = await UserService.createUser(
         firstName,
@@ -33,8 +40,8 @@ export default class AuthController {
         phoneNumber,
         fatherName,
         address,
-        birthdate,
-        regionId
+        new Date(birthdate),
+        +regionId
       );
 
       res.send(user);
@@ -48,6 +55,7 @@ export default class AuthController {
 
     try {
       await UserService.verify(phoneNumber, code);
+      res.sendStatus(200);
     } catch (error) {
       if (error instanceof Error) res.boom.badRequest(error.message);
     }
@@ -107,11 +115,11 @@ export default class AuthController {
 
   static setup() {
     let router = Router();
-    router.post("/exists", this.userExistsHandler);
-    router.post("/register", this.registerHandler);
-    router.post("/verification", this.verificationHandler);
-    router.post("/login", this.loginHandler);
-    router.post("/authentication", this.authenticationHandler);
+    router.post("/exists", phoneNumberValidator, this.userExistsHandler);
+    router.post("/register", registerValidator, this.registerHandler);
+    router.post("/verification", verifyValidator, this.verificationHandler);
+    router.post("/login", phoneNumberValidator, this.loginHandler);
+    router.post("/authentication", verifyValidator, this.authenticationHandler);
     return router;
   }
 

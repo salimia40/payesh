@@ -1,13 +1,18 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import {
+  cityIdValidator,
+  regionIdValidator,
+  regionInputValidator,
+} from "./validators";
 
 export default class RegionController {
   static createRegion: RequestHandler = async (req, res) => {
     let { name, cityId } = req.body;
-    prisma.region.create({
+    await prisma.region.create({
       data: {
         name,
-        cityId,
+        cityId: +cityId,
       },
     });
 
@@ -23,7 +28,7 @@ export default class RegionController {
     let { regionId } = req.body;
     let region = await prisma.region.findFirst({
       where: {
-        id: regionId,
+        id: +regionId,
       },
     });
     res.send(region);
@@ -33,7 +38,7 @@ export default class RegionController {
     let { cityId } = req.body;
     let regions = await prisma.region.findMany({
       where: {
-        cityId,
+        cityId: +cityId,
       },
     });
     res.send(regions);
@@ -41,11 +46,11 @@ export default class RegionController {
 
   static setup() {
     let router = Router();
-    router.post("/new", this.createRegion);
+    router.post("/new", regionInputValidator, this.createRegion);
     router.post("/all", this.getRegions);
-    router.post("/single", this.getRegionById);
-    router.post("/city", this.getRegionsByCity);
+    router.post("/single", regionIdValidator, this.getRegionById);
+    router.post("/city", cityIdValidator, this.getRegionsByCity);
     return router;
   }
-  static route = "/city";
+  static route = "/region";
 }

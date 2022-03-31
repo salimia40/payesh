@@ -1,11 +1,12 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
 import UserService from "../services/user.service";
+import { permissionValidator, userIdValidator } from "./validators";
 
 export default class UserController {
   static confirmUser: RequestHandler = async (req, res) => {
     let { userId } = req.body;
-    prisma.user.update({
+    await prisma.user.update({
       where: { id: userId },
       data: {
         confirmed: true,
@@ -16,7 +17,7 @@ export default class UserController {
   };
   static enableUser: RequestHandler = async (req, res) => {
     let { userId } = req.body;
-    prisma.user.update({
+    await prisma.user.update({
       where: { id: userId },
       data: {
         enabled: true,
@@ -26,7 +27,7 @@ export default class UserController {
   };
   static disableUser: RequestHandler = async (req, res) => {
     let { userId } = req.body;
-    prisma.user.update({
+    await prisma.user.update({
       where: { id: userId },
       data: {
         enabled: false,
@@ -52,19 +53,22 @@ export default class UserController {
 
   static getUserById: RequestHandler = async (req, res) => {
     let { userId } = req.body;
-    let user = await prisma.user.findUnique({ where: { id: userId } });
+    let user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: { permissions: true },
+    });
     res.send(user);
   };
 
   static setup() {
     let router = Router();
-    router.post("/confirm", this.confirmUser);
-    router.post("/enable", this.enableUser);
-    router.post("/disable", this.disableUser);
-    router.post("/grant", this.grantPermission);
-    router.post("/deny", this.denyPermission);
+    router.post("/confirm", userIdValidator, this.confirmUser);
+    router.post("/enable", userIdValidator, this.enableUser);
+    router.post("/disable", userIdValidator, this.disableUser);
+    router.post("/grant", permissionValidator, this.grantPermission);
+    router.post("/deny", permissionValidator, this.denyPermission);
     router.post("/all", this.getUsers);
-    router.post("/single", this.getUserById);
+    router.post("/single", userIdValidator, this.getUserById);
     return router;
   }
   static route = "/user";

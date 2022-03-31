@@ -1,5 +1,14 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import {
+  propertyIdValidator,
+  propertyStatusValidator,
+  propertyTypeRegionValidator,
+  propertyTypeValidator,
+  propertyViewValidator,
+  regionIdValidator,
+  userIdValidator,
+} from "./validators";
 
 export class PropertyController {
   static getPropertyById: RequestHandler = async (req, res) => {
@@ -161,36 +170,73 @@ export class PropertyController {
     res.send(property);
   };
 
+  // set sold or rented
+  static setPropertyStatus: RequestHandler = async (req, res) => {
+    let { propertyId, status } = req.body;
+    let property = await prisma.property.update({
+      where: {
+        id: propertyId,
+      },
+      data: {
+        status,
+      },
+    });
+    res.send(property);
+  };
+
   static route = "/property";
   static setup = () => {
     const router = Router();
     router.post("/create", PropertyController.createProperty);
-    router.post("/view", PropertyController.viewProperty);
-    router.post("/confirm", PropertyController.confirmProperty);
-    router.post("/getById", PropertyController.getPropertyById);
+    router.post(
+      "/view",
+      propertyViewValidator,
+      PropertyController.viewProperty
+    );
+    router.post(
+      "/confirm",
+      propertyIdValidator,
+      PropertyController.confirmProperty
+    );
+    router.post(
+      "/getById",
+      propertyIdValidator,
+      PropertyController.getPropertyById
+    );
     router.post(
       "/getMostViewedProperties",
       PropertyController.getMostViewedProperties
     );
     router.post(
       "/getMostViewedPropertiesByType",
+      propertyTypeValidator,
       PropertyController.getMostViewedPropertiesByType
     );
     router.post(
       "/getMostViewedPropertiesByRegion",
+      regionIdValidator,
       PropertyController.getMostViewedPropertiesByRegion
     );
     router.post(
       "/getMostViewedPropertiesByTypeAndRegion",
+      propertyTypeRegionValidator,
       PropertyController.getMostViewedPropertiesByTypeAndRegion
     );
     router.post(
       "/getPropertiesByUserId",
+      userIdValidator,
       PropertyController.getPropertiesByUserId
     );
     router.post(
       "/getPropertiesByRegionId",
+      regionIdValidator,
       PropertyController.getPropertiesByRegionId
+    );
+
+    router.post(
+      "/setPropertyStatus",
+      propertyStatusValidator,
+      PropertyController.setPropertyStatus
     );
 
     return router;

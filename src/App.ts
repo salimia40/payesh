@@ -20,6 +20,7 @@ export default class App {
 
   initializeMiddlewares() {
     this.app.use(express.json());
+    this.app.use(express.urlencoded());
     this.app.use(boom());
   }
 

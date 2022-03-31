@@ -1,10 +1,11 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
+import { cityIdValidator, cityInputValidator } from "./validators";
 
 export default class CityController {
   static createCity: RequestHandler = async (req, res) => {
     let { name } = req.body;
-    prisma.city.create({
+    await prisma.city.create({
       data: {
         name,
       },
@@ -22,7 +23,7 @@ export default class CityController {
     let { cityId } = req.body;
     let city = await prisma.city.findFirst({
       where: {
-        id: cityId,
+        id: +cityId,
       },
     });
     res.send(city);
@@ -30,9 +31,9 @@ export default class CityController {
 
   static setup() {
     let router = Router();
-    router.post("/new", this.createCity);
+    router.post("/new", cityInputValidator, this.createCity);
     router.post("/all", this.getCities);
-    router.post("/single", this.getCityById);
+    router.post("/single", cityIdValidator, this.getCityById);
     return router;
   }
   static route = "/city";

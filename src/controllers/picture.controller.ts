@@ -1,6 +1,7 @@
 import { RequestHandler, Router } from "express";
 import prisma from "../db";
 import multer, { memoryStorage } from "multer";
+import { pictureInputValidator, propertyIdValidator } from "./validators";
 
 export class PictureController {
   static upload = multer({ dest: "/uploads", storage: memoryStorage() }).single(
@@ -68,9 +69,9 @@ export class PictureController {
 
   static setup = () => {
     const router = Router();
-    router.post("/new", this.upload, this.createPicture);
-    router.post("/byProperty", this.getPicturesByProperty);
-    router.post("/single", this.getPictureById);
+    router.post("/new", this.upload, pictureInputValidator, this.createPicture);
+    router.post("/byProperty", propertyIdValidator, this.getPicturesByProperty);
+    router.post("/single", propertyIdValidator, this.getPictureById);
     router.get("/get/:pictureId", this.getPicture);
 
     return router;

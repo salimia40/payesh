@@ -21,8 +21,12 @@ export default class UserService {
       },
     });
 
+    console.log(token);
+
     if (!token) throw new Error("invalid token");
     else if (isPast(token.expiresAt)) throw new Error("token expired");
+
+    console.log("no errors");
 
     await prisma.user.update({
       where: {
@@ -32,6 +36,7 @@ export default class UserService {
         Verified: true,
       },
     });
+    return;
   }
   static generateToken(): string {
     return Math.floor(10000000 + Math.random() * 90000000).toString();
@@ -47,10 +52,13 @@ export default class UserService {
     birthdate: Date,
     regionId: number
   ) {
-    let user = await prisma.user.findUnique({ where: { phoneNumber } });
+    let user = await prisma.user.findFirst({ where: { phoneNumber } });
     if (user !== null) throw new Error("User already exists");
     let admins = await prisma.user.count({ where: { role: UserRole.admin } });
+    console.log(admins);
     let role = admins > 0 ? UserRole.agent : UserRole.admin;
+    console.log(role);
+    console.log(role, birthdate);
     user = await prisma.user.create({
       data: {
         firstName,
@@ -117,31 +125,31 @@ export default class UserService {
     let permissions = await prisma.permissions.findFirst({ where: { userId } });
     switch (permission) {
       case "userVerification":
-        prisma.permissions.update({
+        await prisma.permissions.update({
           where: { id: permissions?.id },
           data: { userVerification: enabled },
         });
         break;
       case "roleManagement":
-        prisma.permissions.update({
+        await prisma.permissions.update({
           where: { id: permissions?.id },
           data: { roleManagement: enabled },
         });
         break;
       case "realStateView":
-        prisma.permissions.update({
+        await prisma.permissions.update({
           where: { id: permissions?.id },
           data: { realStateView: enabled },
         });
         break;
       case "realStateVerification":
-        prisma.permissions.update({
+        await prisma.permissions.update({
           where: { id: permissions?.id },
           data: { realStateVerification: enabled },
         });
         break;
       case "suspendUsers":
-        prisma.permissions.update({
+        await prisma.permissions.update({
           where: { id: permissions?.id },
           data: { suspendUsers: enabled },
         });
@@ -150,7 +158,7 @@ export default class UserService {
   };
 
   static async userExists(phoneNumber: string) {
-    let user = await prisma.user.findUnique({ where: { phoneNumber } });
+    let user = await prisma.user.findFirst({ where: { phoneNumber } });
     return user !== null;
   }
 }
