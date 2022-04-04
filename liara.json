@@ -1,0 +1,5 @@
+{
+  "platform": "node",
+  "app": "payesh",
+  "port": 8000
+}
