@@ -1,0 +1,12 @@
+version: '0.0.1'
+services:
+  payesh-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: payesh
+    restart: always
+    ports:
+      - 3000:8000
+    env_file:
+      - .env
