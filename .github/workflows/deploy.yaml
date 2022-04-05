@@ -1,9 +1,4 @@
-<<<<<<< HEAD
 name: liara-deploy
-
-=======
-name: CD-Example
->>>>>>> 012f1a93543ba8fb3e58fd810cd921b2ca125470
 on:
   push:
     branches: [production]
