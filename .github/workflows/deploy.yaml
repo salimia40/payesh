@@ -1,23 +1,21 @@
+<<<<<<< HEAD
 name: liara-deploy
 
+=======
+name: CD-Example
+>>>>>>> 012f1a93543ba8fb3e58fd810cd921b2ca125470
 on:
   push:
-    branches:
-      - "production"
-
+    branches: [production]
 jobs:
   deploy:
-    runs-on: "ubuntu-latest"
+    runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: "16"
-      - name: build-project
-        run: |
-          ls
-          npm i
-          npm run build
       - name: update-liara
         env:
           LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}

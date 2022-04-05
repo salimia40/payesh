@@ -12,6 +12,7 @@
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:seed": "prisma db seed",
+    "prisma:studio": "npx prisma studio",
     "test": "jest"
   },
   "keywords": [],
