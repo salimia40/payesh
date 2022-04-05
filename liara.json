@@ -1,5 +1,5 @@
 {
-  "platform": "node",
+  "platform": "docker",
   "app": "payesh",
   "port": 8000
 }
